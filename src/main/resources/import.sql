@@ -7,4 +7,4 @@ insert into tb_link (url, texto_botao, usuario_id) values ('https://www.instagra
 insert into tb_link (url, texto_botao, usuario_id) values ('https://www.linkedin.com/', 'Meu linkedo', 1)
 insert into tb_link (url, texto_botao, usuario_id) values ('https://www.linkedin.com/', 'Meu linkedo', 2)
 
-insert into tb_regra(regra) values ('USER');
+insert into tb_regra(regra) values ('ROLE_USER');
