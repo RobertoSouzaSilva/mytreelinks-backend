@@ -22,6 +22,7 @@ public class UsuarioDTO implements Serializable {
 	private String nome;
 	private String email;
 	private String apelidoUrl;
+	private String urlImg;
 	private List<RegraDTO> regraDTO = new ArrayList<>();
 	private List<LinksDTO> linksDTO = new ArrayList<>();
 
@@ -30,6 +31,7 @@ public class UsuarioDTO implements Serializable {
 		this.nome = usuario.getNome();
 		this.email = usuario.getEmail();
 		this.apelidoUrl = usuario.getApelidoUrl();
+		this.urlImg = usuario.getUrlImg();
 	}
 
 	public UsuarioDTO(UsuarioEntity usuario, List<LinksEntity> links, List<RegraEntity> regras) {

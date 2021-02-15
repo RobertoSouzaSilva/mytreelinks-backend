@@ -39,6 +39,7 @@ public class UsuarioEntity implements Serializable {
 	@Column(unique = true)
 	private String email;
 	private String senha;
+	private String urlImg;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))

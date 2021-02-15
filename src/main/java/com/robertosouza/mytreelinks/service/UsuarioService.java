@@ -1,5 +1,7 @@
 package com.robertosouza.mytreelinks.service;
 
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,9 +13,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.robertosouza.mytreelinks.dto.LinksDTO;
 import com.robertosouza.mytreelinks.dto.RegraDTO;
+import com.robertosouza.mytreelinks.dto.UriDTO;
 import com.robertosouza.mytreelinks.dto.UsuarioDTO;
 import com.robertosouza.mytreelinks.dto.UsuarioInsertDTO;
 import com.robertosouza.mytreelinks.entity.LinksEntity;
@@ -35,6 +39,9 @@ public class UsuarioService {
 	
 	@Autowired
 	private RegraRepository regraRepository;
+	
+	@Autowired
+	private S3Service s3Service;
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -60,8 +67,17 @@ public class UsuarioService {
 		UsuarioEntity usuario = new UsuarioEntity();
 		usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
 		copyDtoToEntity(dto, usuario);
+		
+		List<RegraEntity> regra = regraRepository.findAll();
+		
+		usuario.setRegras(regra);
 		usuario = usuarioRepository.save(usuario);	
 		return new UsuarioDTO(usuario);
+	}
+	
+	public UriDTO uploadImage(MultipartFile file) {
+		URL url = s3Service.uploadImage(file);
+		return new UriDTO(url.toString());
 	}
 	
 	@Transactional
@@ -90,6 +106,7 @@ public class UsuarioService {
 		usuario.setNome(dto.getNome());
 		usuario.setEmail(dto.getEmail());
 		usuario.setApelidoUrl(dto.getApelidoUrl());
+		usuario.setUrlImg(dto.getUrlImg());
 		
 		usuario.getRegras().clear();
 		usuario.getLinks().clear();
