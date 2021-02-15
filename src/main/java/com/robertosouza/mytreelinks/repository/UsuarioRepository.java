@@ -12,6 +12,8 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
 
 	@Query(value = "select * from tb_usuario where apelido_url like %:apelido_url%", nativeQuery = true)
 	UsuarioEntity findByApelidoUsuario(@Param("apelido_url") String apelido_url);
+
+	UsuarioEntity findByEmail(String email);
 	
 
 
