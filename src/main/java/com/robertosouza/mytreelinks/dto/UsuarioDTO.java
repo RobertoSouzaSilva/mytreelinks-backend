@@ -23,7 +23,7 @@ public class UsuarioDTO implements Serializable {
 	private String email;
 	private String apelidoUrl;
 	private String urlImg;
-	private List<RegraDTO> regraDTO = new ArrayList<>();
+	//private List<RegraDTO> regraDTO = new ArrayList<>();
 	private List<LinksDTO> linksDTO = new ArrayList<>();
 
 	public UsuarioDTO(UsuarioEntity usuario) {
@@ -34,11 +34,9 @@ public class UsuarioDTO implements Serializable {
 		this.urlImg = usuario.getUrlImg();
 	}
 
-	public UsuarioDTO(UsuarioEntity usuario, List<LinksEntity> links, List<RegraEntity> regras) {
+	public UsuarioDTO(UsuarioEntity usuario, List<LinksEntity> links) {
 		this(usuario);
 		links.forEach(link -> linksDTO.add(new LinksDTO(link)));
-		regras.forEach(regra -> regraDTO.add(new RegraDTO(regra)));
-
 	}
 
 }

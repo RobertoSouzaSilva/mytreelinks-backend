@@ -26,12 +26,12 @@ public class LinksController {
 	@Autowired
 	private LinksService linksService;
 	
-	@GetMapping
-	public ResponseEntity<List<LinksDTO>> findAll(){
-		List<LinksDTO> dto = linksService.findAll();
-		return ResponseEntity.ok().body(dto);
-		
-	}
+//	@GetMapping
+//	public ResponseEntity<List<LinksDTO>> findAll(){
+//		List<LinksDTO> dto = linksService.findAll();
+//		return ResponseEntity.ok().body(dto);
+//		
+//	}
 	
 	@GetMapping(value = "/{apelido}")
 	public ResponseEntity<List<LinksDTO>> findByName(@PathVariable String apelido){

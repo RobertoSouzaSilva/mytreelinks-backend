@@ -29,16 +29,22 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	@GetMapping
-	public ResponseEntity<List<UsuarioDTO>> findAll() {
-		List<UsuarioDTO> dto = usuarioService.findAll();
-		return ResponseEntity.ok().body(dto);
+//	@GetMapping
+//	public ResponseEntity<List<UsuarioDTO>> findAll() {
+//		List<UsuarioDTO> dto = usuarioService.findAll();
+//		return ResponseEntity.ok().body(dto);
+//
+//	}
 
-	}
-
-	@GetMapping(value = "/{apelido}")
-	public ResponseEntity<UsuarioDTO> findByName(@PathVariable String apelido) {
-		UsuarioDTO dto = usuarioService.findByApelidoUrl(apelido);
+//	@GetMapping(value = "/{apelido}")
+//	public ResponseEntity<UsuarioDTO> findByName(@PathVariable String apelido) {
+//		UsuarioDTO dto = usuarioService.findByApelidoUrl(apelido);
+//		return ResponseEntity.ok().body(dto);
+//	}
+	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<UsuarioDTO> buscaPeloId(@PathVariable Long id) {
+		UsuarioDTO dto = usuarioService.findById(id);
 		return ResponseEntity.ok().body(dto);
 	}
 

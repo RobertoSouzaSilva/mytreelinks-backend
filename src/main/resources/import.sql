@@ -8,3 +8,6 @@ insert into tb_link (url, texto_botao, usuario_id) values ('https://www.linkedin
 insert into tb_link (url, texto_botao, usuario_id) values ('https://www.linkedin.com/', 'Meu linkedo', 2)
 
 insert into tb_regra(regra) values ('ROLE_USER');
+
+insert into tb_usuario_regra (usuario_id, regra_id) values (1,1);
+insert into tb_usuario_regra (usuario_id, regra_id) values (2,1);

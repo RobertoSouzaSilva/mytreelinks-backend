@@ -21,6 +21,7 @@ import com.robertosouza.mytreelinks.exceptions.UsuarioNotFoundException;
 import com.robertosouza.mytreelinks.repository.LinksRepository;
 import com.robertosouza.mytreelinks.repository.UsuarioRepository;
 
+
 @Service
 public class LinksService {
 
@@ -29,12 +30,15 @@ public class LinksService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private AuthService authService;
 
-	@Transactional(readOnly = true)
-	public List<LinksDTO> findAll() {
-		List<LinksEntity> links = linksRepository.findAll();
-		return links.stream().map(x -> new LinksDTO(x)).collect(Collectors.toList());
-	}
+//	@Transactional(readOnly = true)
+//	public List<LinksDTO> findAll() {
+//		List<LinksEntity> links = linksRepository.findAll();
+//		return links.stream().map(x -> new LinksDTO(x)).collect(Collectors.toList());
+//	}
 
 	@Transactional(readOnly = true)
 	public List<LinksDTO> findByApelidoUrl(String apelido) {
@@ -68,6 +72,9 @@ public class LinksService {
 
 	public void delete(Long id) {
 		try {
+			Optional<LinksEntity> link = linksRepository.findById(id);
+			LinksEntity linksEntity = link.orElseThrow(() -> new LinkNotFoundException("Link não encontrado"));		
+			authService.validateSelf(linksEntity.getUsuario().getId());			
 			linksRepository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
 			throw new UsuarioNotFoundException("Id não encontrado " + id);
@@ -81,10 +88,12 @@ public class LinksService {
 		links.setTextoBotao(dto.getTextoBotao());
 		Optional<UsuarioEntity> usuOpt = usuarioRepository.findById(dto.getUsuario().getId());
 		UsuarioEntity usuEnt = usuOpt.orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado!"));
+		authService.validateSelf(usuEnt.getId());
 		links.setUsuario(usuEnt);
 	}
 
-	private LinksEntity copyDtoToEntityUpdate(Long id, LinksEntity links, LinksDTO dto) {
+	private LinksEntity copyDtoToEntityUpdate(Long id, LinksEntity links, LinksResponseDTO dto) {
+		authService.validateSelf(dto.getUsuario().getId());
 		Optional<LinksEntity> lnkOpt = linksRepository.findById(id);
 		LinksEntity lnkEnt = lnkOpt.orElseThrow(() -> new LinkNotFoundException("Link não encontrado!"));
 		links.setId(lnkEnt.getId());

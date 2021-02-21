@@ -1,9 +1,8 @@
 package com.robertosouza.mytreelinks.service;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -36,10 +35,7 @@ public class UsuarioService implements UserDetailsService {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-	@Autowired
-	private LinksRepository linkRepository;
-	
+		
 	@Autowired
 	private RegraRepository regraRepository;
 	
@@ -49,30 +45,42 @@ public class UsuarioService implements UserDetailsService {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
-	@Transactional(readOnly = true)
-	public List<UsuarioDTO> findAll() {
-		List<UsuarioEntity> links = usuarioRepository.findAll();
-		return links.stream().map(usu -> new UsuarioDTO(usu, usu.getLinks(), usu.getRegras())).collect(Collectors.toList());
-	}
+	@Autowired
+	private AuthService authService;
+	
+//	@Transactional(readOnly = true)
+//	public List<UsuarioDTO> findAll() {
+//		List<UsuarioEntity> links = usuarioRepository.findAll();
+//		return links.stream().map(usu -> new UsuarioDTO(usu, usu.getLinks(), usu.getRegras())).collect(Collectors.toList());
+//	}
+	
+//	@Transactional(readOnly = true)
+//	public UsuarioDTO findByApelidoUrl(String apelido_url) {
+//		UsuarioEntity usuario = usuarioRepository.findByApelidoUsuario(apelido_url);
+//		if(usuario == null) {
+//			throw new UsuarioNotFoundException("Usuário não encontrado!");
+//		}
+//		//UsuarioEntity links = usuarioRepository.buscaPorId(usuario.getId());
+//		authService.validateSelf(usuario.getId());
+//
+//		return new UsuarioDTO(usuario, usuario.getLinks(), usuario.getRegras());
+//	}
 	
 	@Transactional(readOnly = true)
-	public UsuarioDTO findByApelidoUrl(String apelido_url) {
-		UsuarioEntity usuario = usuarioRepository.findByApelidoUsuario(apelido_url);
-		if(usuario == null) {
-			throw new UsuarioNotFoundException("Usuário não encontrado!");
-		}
-		//UsuarioEntity links = usuarioRepository.buscaPorId(usuario.getId());
-		return new UsuarioDTO(usuario, usuario.getLinks(), usuario.getRegras());
+	public UsuarioDTO findById(Long id) {
+		authService.validateSelf(id);
+		Optional<UsuarioEntity> userOptional = usuarioRepository.findById(id);			
+		UsuarioEntity userEntity = userOptional.orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));		
+		return new UsuarioDTO(userEntity, userEntity.getLinks());	
 	}
+	
 
 	@Transactional
 	public UsuarioDTO insert(UsuarioInsertDTO dto) {
 		UsuarioEntity usuario = new UsuarioEntity();
 		usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
 		copyDtoToEntity(dto, usuario);
-		
 		List<RegraEntity> regra = regraRepository.findAll();
-		
 		usuario.setRegras(regra);
 		usuario = usuarioRepository.save(usuario);	
 		return new UsuarioDTO(usuario);
@@ -86,8 +94,11 @@ public class UsuarioService implements UserDetailsService {
 	@Transactional
 	public UsuarioDTO update(Long id, UsuarioInsertDTO dto) {
 		try {
+		authService.validateSelf(id);
 		UsuarioEntity usuario = usuarioRepository.getOne(id);
 		copyDtoToEntity(dto, usuario);
+		List<RegraEntity> regra = regraRepository.findAll();
+		usuario.setRegras(regra);
 		usuario = usuarioRepository.save(usuario);
 		return new UsuarioDTO(usuario);
 		} catch(EntityNotFoundException e ) {
@@ -97,6 +108,7 @@ public class UsuarioService implements UserDetailsService {
 	
 	public void delete(Long id) {
 		try {
+			authService.validateSelf(id);
 			usuarioRepository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
 			throw new UsuarioNotFoundException("Id não encontrado " + id);
@@ -109,22 +121,7 @@ public class UsuarioService implements UserDetailsService {
 		usuario.setNome(dto.getNome());
 		usuario.setEmail(dto.getEmail());
 		usuario.setApelidoUrl(dto.getApelidoUrl());
-		usuario.setUrlImg(dto.getUrlImg());
-		
-		usuario.getRegras().clear();
-		usuario.getLinks().clear();
-		
-		for(RegraDTO regraDto : dto.getRegraDTO()) {
-			RegraEntity regra = regraRepository.getOne(regraDto.getId());
-			usuario.getRegras().add(regra);
-		}
-		
-		for(LinksDTO linkDto : dto.getLinksDTO()) {
-			LinksEntity link = linkRepository.getOne(linkDto.getId());
-			usuario.getLinks().add(link);
-			
-		}
-		
+		usuario.setUrlImg(dto.getUrlImg());		
 	}
 
 	@Override
